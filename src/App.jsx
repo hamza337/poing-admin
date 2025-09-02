@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import UserManagement from './pages/UserManagement';
 import ReportsComplaints from './pages/ReportsComplaints';
 import CustomerService from './pages/CustomerService';
+import PoingConfiguration from './pages/PoingConfiguration';
 import TermsConditions from './pages/TermsConditions';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 
@@ -20,6 +21,7 @@ function App() {
             <Route path="/user-management" element={<UserManagement />} />
             <Route path="/reports-complaints" element={<ReportsComplaints />} />
             <Route path="/customer-service" element={<CustomerService />} />
+            <Route path="/poing-configuration" element={<PoingConfiguration />} />
             <Route path="/terms-conditions" element={<TermsConditions />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           </Routes>

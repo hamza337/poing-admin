@@ -7,6 +7,7 @@ import {
   Headphones,
   Shield,
   Lock,
+  Settings,
   Menu,
   X
 } from 'lucide-react';
@@ -35,6 +36,11 @@ const Sidebar = () => {
       name: 'Customer Service',
       path: '/customer-service',
       icon: Headphones
+    },
+    {
+      name: 'Poing Configuration',
+      path: '/poing-configuration',
+      icon: Settings
     },
     {
       name: 'Terms & Conditions',
