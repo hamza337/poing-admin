@@ -5,7 +5,7 @@ const Topbar = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   return (
-    <div className="bg-white shadow-sm border-b border-gray-200 px-4 py-3">
+    <div className="bg-white shadow-sm border-b border-gray-200 px-4 py-2">
       <div className="flex items-center justify-end">
         {/* Profile Dropdown */}
         <div className="relative">
@@ -13,7 +13,7 @@ const Topbar = () => {
             onClick={() => setIsProfileOpen(!isProfileOpen)}
             className="flex items-center space-x-3 p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors duration-200"
           >
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{background: '#0868a8'}}>
               <User size={16} className="text-white" />
             </div>
             <div className="hidden md:block text-left">

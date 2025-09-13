@@ -199,10 +199,10 @@ const CustomerService = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Emails</p>
-              <p className="text-2xl font-bold text-blue-600">{stats.total}</p>
+              <p className="text-2xl font-bold" style={{color: '#0868a8'}}>{stats.total}</p>
             </div>
-            <div className="p-3 bg-blue-100 rounded-full">
-              <Mail className="h-6 w-6 text-blue-600" />
+            <div className="p-3 rounded-full text-white" style={{backgroundColor: '#0868a8'}}>
+              <Mail className="h-6 w-6 text-white" />
             </div>
           </div>
         </div>
@@ -258,7 +258,8 @@ const CustomerService = () => {
                   placeholder="Search emails..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
+                  style={{'--tw-ring-color': '#0868a8'}}
                 />
               </div>
               
@@ -267,7 +268,8 @@ const CustomerService = () => {
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="border border-gray-300 rounded-lg px-3 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="border border-gray-300 rounded-lg px-3 py-1 text-sm focus:ring-2 focus:border-transparent"
+                  style={{'--tw-ring-color': '#0868a8'}}
                 >
                   <option value="all">All Status</option>
                   <option value="new">New</option>
@@ -284,8 +286,9 @@ const CustomerService = () => {
                   key={email.id}
                   onClick={() => handleEmailClick(email)}
                   className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
-                    selectedEmail?.id === email.id ? 'bg-blue-50 border-blue-200' : ''
+                    selectedEmail?.id === email.id ? 'border-blue-200' : ''
                   } ${!email.isRead ? 'bg-blue-25' : ''}`}
+                  style={selectedEmail?.id === email.id ? {backgroundColor: '#e6f3ff'} : {}}
                 >
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center space-x-2">
@@ -318,7 +321,7 @@ const CustomerService = () => {
                       </span>
                     </div>
                     {!email.isRead && (
-                      <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                      <div className="w-2 h-2 rounded-full" style={{backgroundColor: '#0868a8'}}></div>
                     )}
                   </div>
                 </div>
@@ -388,12 +391,15 @@ const CustomerService = () => {
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={handleReply}
-                      className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2"
+                      style={{backgroundColor: '#0868a8', '--tw-ring-color': '#0868a8'}}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = '#065a87'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = '#0868a8'}
                     >
                       <Reply className="h-4 w-4 mr-1" />
                       Reply
                     </button>
-                    <button className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <button className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2" style={{'--tw-ring-color': '#0868a8'}}>
                       <Forward className="h-4 w-4 mr-1" />
                       Forward
                     </button>
@@ -420,7 +426,8 @@ const CustomerService = () => {
                         value={replyText}
                         onChange={(e) => setReplyText(e.target.value)}
                         rows={4}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:border-transparent"
+                        style={{'--tw-ring-color': '#0868a8'}}
                         placeholder="Type your reply here..."
                       />
                     </div>
@@ -433,14 +440,18 @@ const CustomerService = () => {
                       <div className="flex items-center space-x-2">
                         <button
                           onClick={() => setShowReplyForm(false)}
-                          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                          style={{'--tw-ring-color': '#0868a8'}}
                         >
                           Cancel
                         </button>
                         <button
                           onClick={handleSendReply}
                           disabled={!replyText.trim()}
-                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                          style={{backgroundColor: '#0868a8', '--tw-ring-color': '#0868a8'}}
+                          onMouseEnter={(e) => !e.target.disabled && (e.target.style.backgroundColor = '#065a87')}
+                          onMouseLeave={(e) => !e.target.disabled && (e.target.style.backgroundColor = '#0868a8')}
                         >
                           <Send className="h-4 w-4 mr-1" />
                           Send Reply

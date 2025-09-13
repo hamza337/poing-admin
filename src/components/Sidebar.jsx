@@ -66,18 +66,18 @@ const Sidebar = () => {
       
       {/* Sidebar */}
       <div className={`
-        fixed left-0 top-0 h-full bg-white shadow-xl z-50 transition-all duration-300 ease-in-out
+        fixed left-0 top-0 h-full bg-white shadow-xl z-50 transition-[width,transform] duration-300 ease-in-out will-change-[width,transform] transform-gpu
         ${isCollapsed ? 'w-16' : 'w-64'}
         ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         lg:relative lg:translate-x-0
       `}>
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
           <div className={`flex items-center ${isCollapsed ? 'justify-center w-full' : 'space-x-3'}`}>
             {/* Desktop collapse toggle button */}
             <button
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className={`hidden lg:flex rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors duration-200 ${
+              className={`hidden lg:flex rounded-lg bg-gray-100 hover:bg-gray-200 transition-[background-color,padding] duration-200 transform-gpu ${
                 isCollapsed ? 'p-1.5' : 'p-2'
               }`}
             >
@@ -86,12 +86,19 @@ const Sidebar = () => {
             
             {!isCollapsed && (
               <div className="flex items-center space-x-2">
-                <div className="w-7 h-7 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                {/* Desktop: Show full logo */}
+                <img 
+                  src="/brandLogo.png" 
+                  alt="Poing Admin" 
+                  className="h-12 w-auto hidden sm:block"
+                />
+                {/* Mobile: Show PA text */}
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center sm:hidden" style={{background: '#0868a8'}}>
                   <span className="text-white font-bold text-xs">PA</span>
                 </div>
-                <h1 className="text-xl font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Poing Admin</h1>
               </div>
             )}
+
           </div>
           
           {/* Mobile close button */}
@@ -113,13 +120,14 @@ const Sidebar = () => {
                   <NavLink
                     to={item.path}
                     className={({ isActive }) => `
-                      flex items-center px-3 py-3 rounded-lg transition-all duration-200
-                      ${isActive 
-                        ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md' 
-                        : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                      }
-                      ${isCollapsed ? 'justify-center' : 'space-x-3'}
-                    `}
+                        flex items-center px-3 py-3 rounded-lg transition-[background-color,color] duration-200
+                        ${isActive 
+                          ? 'text-white shadow-md' 
+                          : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                        }
+                        ${isCollapsed ? 'justify-center' : 'space-x-3'}
+                      `}
+                      style={({ isActive }) => isActive ? { background: '#0868a8' } : {}}
                     onClick={() => setIsMobileOpen(false)}
                   >
                     <IconComponent size={20} className="flex-shrink-0" />
