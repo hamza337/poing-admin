@@ -1,8 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, LogOut, ChevronDown } from 'lucide-react';
 
 const Topbar = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
+  const [userRole, setUserRole] = useState('');
+
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      try {
+        const user = JSON.parse(userData);
+        if (user.email) {
+          setUserEmail(user.email);
+        }
+        if (user.role) {
+          setUserRole(user.role);
+        }
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
+  }, []);
 
   return (
     <div className="bg-white shadow-sm border-b border-gray-200 px-4 py-2">
@@ -17,8 +36,8 @@ const Topbar = () => {
               <User size={16} className="text-white" />
             </div>
             <div className="hidden md:block text-left">
-              <p className="text-sm font-medium text-gray-800">Admin User</p>
-              <p className="text-xs text-gray-500">admin@poing.com</p>
+              <p className="text-sm font-medium text-gray-900">{userRole === 'report_manager' ? 'Manager' : 'Admin' }</p>
+              <p className="text-xs text-gray-500">{userEmail}</p>
             </div>
             <ChevronDown size={16} className="text-gray-400" />
           </button>
@@ -27,7 +46,16 @@ const Topbar = () => {
           {isProfileOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
               <div className="py-2">
-                <button className="flex items-center space-x-3 w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 transition-colors duration-200">
+                <button 
+                  onClick={() => {
+                    // Clear authentication tokens
+                    localStorage.removeItem('admin-auth-token');
+                    localStorage.removeItem('user');
+                    // Redirect to login page
+                    window.location.href = '/';
+                  }}
+                  className="flex items-center space-x-3 w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 transition-colors duration-200"
+                >
                   <LogOut size={16} />
                   <span className="text-sm">Sign Out</span>
                 </button>

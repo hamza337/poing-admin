@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -16,50 +16,74 @@ const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  const navigationItems = [
+  // Get user data from localStorage
+  const user = useMemo(() => {
+    try {
+      const userData = localStorage.getItem('user');
+      return userData ? JSON.parse(userData) : null;
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+      return null;
+    }
+  }, []);
+
+  const allNavigationItems = [
     {
       name: 'Dashboard',
       path: '/dashboard',
-      icon: LayoutDashboard
+      icon: LayoutDashboard,
+      allowedRoles: ['user','admin', 'report_manager'] // Available to all roles
     },
     {
       name: 'User Management',
       path: '/user-management',
-      icon: Users
+      icon: Users,
+      allowedRoles: ['user', 'admin'] // Restricted for report_manager
     },
     {
       name: 'Reports & Complaints',
       path: '/reports-complaints',
-      icon: FileText
+      icon: FileText,
+      allowedRoles: ['user', 'admin', 'report_manager'] // Available to all roles
     },
     {
       name: 'Customer Service',
       path: '/customer-service',
-      icon: Headphones
+      icon: Headphones,
+      allowedRoles: ['user', 'admin'] // Restricted for report_manager
     },
     {
       name: 'Poing Configuration',
       path: '/poing-configuration',
-      icon: Settings
+      icon: Settings,
+      allowedRoles: ['user', 'admin'] // Restricted for report_manager
     },
     {
       name: 'Terms & Conditions',
       path: '/terms-conditions',
-      icon: Shield
+      icon: Shield,
+      allowedRoles: ['user', 'admin', 'report_manager'] // Available to all roles
     },
     {
       name: 'Privacy Policy',
       path: '/privacy-policy',
-      icon: Lock
+      icon: Lock,
+      allowedRoles: ['user', 'admin', 'report_manager'] // Available to all roles
     }
   ];
+
+  // Filter navigation items based on user role
+  const navigationItems = allNavigationItems.filter(item => {
+    if (!user || !user.role) return true; // Show all if no user data
+    return item.allowedRoles.includes(user.role);
+  });
 
   return (
     <>
       {/* Mobile overlay */}
       {isMobileOpen && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          className="fixed inset-0 bg-opacity-50 z-40 lg:hidden"
           onClick={() => setIsMobileOpen(false)}
         />
       )}

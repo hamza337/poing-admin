@@ -3,20 +3,35 @@ import { Users, Search, Plus, MoreVertical, Edit, Ban, Clock, X, Eye, EyeOff } f
 import toast from 'react-hot-toast';
 
 const UserManagement = () => {
+  const [activeTab, setActiveTab] = useState('users');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showCreateManagerModal, setShowCreateManagerModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showSuspendModal, setShowSuspendModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showDropdown, setShowDropdown] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [managersLoading, setManagersLoading] = useState(false);
   const [users, setUsers] = useState([]);
+  const [managers, setManagers] = useState([]);
   const [totalUsers, setTotalUsers] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   
-  const [newUser, setNewUser] = useState({ firstName: '', lastName: '', email: '', password: '' });
+  const [newUser, setNewUser] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: ''
+  });
+
+  const [newManager, setNewManager] = useState({
+    firstName: '',
+    lastName: '',
+    email: ''
+  });
   const [editUser, setEditUser] = useState({
     firstName: '',
     lastName: '',
@@ -29,11 +44,15 @@ const UserManagement = () => {
   const [uploadingImage, setUploadingImage] = useState(false);
 
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
-  const usersPerPage = 5;
+  const usersPerPage = 20;
 
   useEffect(() => {
-    fetchUsers();
-  }, [currentPage]);
+    if (activeTab === 'users') {
+      fetchUsers();
+    } else if (activeTab === 'managers') {
+      fetchManagers();
+    }
+  }, [currentPage, searchTerm, activeTab]);
 
   // Debounced search effect
   useEffect(() => {
@@ -53,30 +72,36 @@ const UserManagement = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${baseUrl}/admin/users?page=${currentPage}&limit=${usersPerPage}&search=${encodeURIComponent(searchTerm)}`);
+      const response = await fetch(`${baseUrl}/admin/users?page=${currentPage}&limit=${usersPerPage}&search=${encodeURIComponent(searchTerm)}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
       
       if (response.ok) {
         const data = await response.json();
         
-        // Transform API data to match component expectations
-        const transformedUsers = (data.users || data.data || []).map(user => ({
-          id: user.id,
-          firstName: user.firstName || '',
-          lastName: user.lastName || '',
-          email: user.email || '',
-          country: user.country || 'N/A',
-          phoneNumber: user.phoneNumber || '',
-          address: user.address || '',
-          profileImageUrl: user.profileImageUrl || null,
-          status: user.status === 'active' ? 'Active' : 
-                  user.suspendedUntil ? 'Suspended' : 
-                  user.status === 'blocked' ? 'Blocked' : 'Active',
-          suspendedUntil: user.suspendedUntil
-        }));
+        // Transform API data to match component expectations and filter out report managers
+        const transformedUsers = (data.users || data.data || [])
+          .filter(user => user.role !== 'report_manager') // Client-side filtering
+          .map(user => ({
+            id: user.id,
+            firstName: user.firstName || '',
+            lastName: user.lastName || '',
+            email: user.email || '',
+            country: user.country || 'N/A',
+            phoneNumber: user.phoneNumber || '',
+            address: user.address || '',
+            profileImageUrl: user.profileImageUrl || null,
+            status: user.status === 'active' ? 'Active' : 
+                    user.suspendedUntil ? 'Suspended' : 
+                    user.status === 'blocked' ? 'Blocked' : 'Active',
+            suspendedUntil: user.suspendedUntil
+          }));
         
         setUsers(transformedUsers);
-        setTotalUsers(data.totalUsers || data.total || 0);
-        setTotalPages(data.totalPages || Math.ceil((data.total || 0) / usersPerPage));
+        setTotalUsers(transformedUsers.length);
+        setTotalPages(Math.ceil(transformedUsers.length / usersPerPage));
       } else {
         console.error('Failed to fetch users');
         setUsers([]);
@@ -93,6 +118,41 @@ const UserManagement = () => {
     }
   };
 
+  const fetchManagers = async () => {
+    setManagersLoading(true);
+    try {
+      const response = await fetch(`${baseUrl}/admin/users?page=${currentPage}&limit=${usersPerPage}&search=${encodeURIComponent(searchTerm)}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Filter for report managers on client side
+        const reportManagers = (data.users || data.data || [])
+          .filter(user => user.role === 'report_manager');
+        
+        setManagers(reportManagers);
+        setTotalUsers(reportManagers.length);
+        setTotalPages(Math.ceil(reportManagers.length / usersPerPage));
+      } else {
+        console.error('Failed to fetch managers');
+        setManagers([]);
+        setTotalUsers(0);
+        setTotalPages(0);
+      }
+    } catch (error) {
+      console.error('Error fetching managers:', error);
+      setManagers([]);
+      setTotalUsers(0);
+      setTotalPages(0);
+    } finally {
+      setManagersLoading(false);
+    }
+  };
+
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
     setCurrentPage(1); // Reset to first page when searching
@@ -104,6 +164,7 @@ const UserManagement = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify({
           email: newUser.email,
@@ -123,11 +184,44 @@ const UserManagement = () => {
       } else {
         const errorData = await response.json();
         console.error('Error creating user:', errorData);
-        // You could add a toast notification here for better UX
+        toast.error('Failed to create user');
       }
     } catch (error) {
       console.error('Network error creating user:', error);
-      // You could add a toast notification here for better UX
+      toast.error('Failed to create user');
+    }
+  };
+
+  const handleCreateManager = async () => {
+    try {
+      const response = await fetch(`${baseUrl}/admin/create-report-manager`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          email: newManager.email,
+          firstName: newManager.firstName,
+          lastName: newManager.lastName
+        })
+      });
+
+      if (response.ok) {
+        // Reset form and close modal
+        setNewManager({ firstName: '', lastName: '', email: '' });
+        setShowCreateManagerModal(false);
+        // Refresh the managers list
+        fetchManagers();
+        toast.success('Manager created successfully');
+      } else {
+        const errorData = await response.json();
+        console.error('Error creating manager:', errorData);
+        toast.error('Failed to create manager');
+      }
+    } catch (error) {
+      console.error('Network error creating manager:', error);
+      toast.error('Failed to create manager');
     }
   };
 
@@ -135,6 +229,7 @@ const UserManagement = () => {
     setEditUser({
       firstName: user.firstName || '',
       lastName: user.lastName || '',
+      email: user.email || '',
       phone: user.phoneNumber || '',
       country: user.country || '',
       address: user.address || '',
@@ -203,6 +298,7 @@ const UserManagement = () => {
       const updateData = {
         firstName: editUser.firstName,
         lastName: editUser.lastName,
+        email: editUser.email,
         phoneNumber: editUser.phone,
         country: editUser.country,
         address: editUser.address
@@ -324,37 +420,73 @@ const UserManagement = () => {
     <div className="space-y-6">
       {/* Page Header */}
       <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">User Management</h1>
             <p className="text-sm text-gray-600">Manage and monitor all user accounts</p>
           </div>
           <button 
-            onClick={() => setShowCreateModal(true)}
-            className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2"
+            onClick={() => activeTab === 'users' ? setShowCreateModal(true) : setShowCreateManagerModal(true)}
+            className="text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-md transition-all duration-200 flex items-center gap-2"
+            style={{backgroundColor: '#0868a8', '--tw-ring-color': '#0868a8'}}
           >
             <Plus className="h-4 w-4" />
-            Create User
+            {activeTab === 'users' ? 'Create User' : 'Invite Manager'}
+          </button>
+        </div>
+        
+        {/* Tab Navigation */}
+        <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+          <button
+            onClick={() => {
+              setActiveTab('users');
+              setCurrentPage(1);
+              setSearchTerm('');
+            }}
+            className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors duration-200 ${
+              activeTab === 'users'
+                ? 'bg-white text-blue-700 shadow-sm'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            Platform Users
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab('managers');
+              setCurrentPage(1);
+              setSearchTerm('');
+            }}
+            className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors duration-200 ${
+              activeTab === 'managers'
+                ? 'bg-white text-blue-700 shadow-sm'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            Managers
           </button>
         </div>
       </div>
 
-      {/* Search */}
-      <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-          <input
-            type="text"
-            placeholder="Search users by name, email, or phone..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-          />
-        </div>
-      </div>
+      {/* Platform Users Tab */}
+      {activeTab === 'users' && (
+        <>
+          {/* Search */}
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+              <input
+                type="text"
+                placeholder="Search users by name, email, or phone..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              />
+            </div>
+          </div>
 
-      {/* Users Table */}
-      <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+          {/* Users Table */}
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
@@ -606,7 +738,334 @@ const UserManagement = () => {
             </div>
           </div>
         </div>
-      </div>
+          </div>
+        </>
+      )}
+
+      {/* Managers Tab */}
+      {activeTab === 'managers' && (
+        <>
+          {/* Search */}
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+              <input
+                type="text"
+                placeholder="Search managers by name or email..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              />
+            </div>
+          </div>
+
+          {/* Managers Table */}
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">First Name</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Last Name</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Email</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Role</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {managersLoading ? (
+                    // Loading skeleton
+                    Array.from({ length: 5 }).map((_, index) => (
+                      <tr key={index} className="animate-pulse">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="h-4 bg-gray-200 rounded w-20"></div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="h-4 bg-gray-200 rounded w-20"></div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="h-4 bg-gray-200 rounded w-32"></div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="h-4 bg-gray-200 rounded w-24"></div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="h-8 w-8 bg-gray-200 rounded"></div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : managers.length === 0 ? (
+                    // Empty state
+                    <tr>
+                      <td colSpan="5" className="px-6 py-12 text-center text-gray-500">
+                        <Users className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                        <p className="text-lg font-medium mb-2">No managers found</p>
+                        <p className="text-sm">Try adjusting your search criteria or invite a new manager.</p>
+                      </td>
+                    </tr>
+                  ) : (
+                    // Manager rows
+                    managers.map((manager) => (
+                      <tr key={manager.id} className="hover:bg-gray-50 transition-colors duration-150">
+                        <td className="px-6 py-5 whitespace-nowrap text-sm font-semibold text-gray-900">
+                          {manager.firstName || 'N/A'}
+                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {manager.lastName || 'N/A'}
+                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {manager.email || 'N/A'}
+                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap text-sm font-medium text-gray-900">
+                          Report Manager
+                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap text-sm text-gray-500 relative">
+                          <button
+                            onClick={() => setShowDropdown(showDropdown === manager.id ? null : manager.id)}
+                            className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 shadow-sm border border-gray-200"
+                          >
+                            <MoreVertical className="h-4 w-4" />
+                          </button>
+                          {showDropdown === manager.id && (
+                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-10 border border-gray-200">
+                              <div className="py-2">
+                                <button
+                                  onClick={() => handleEditUser(manager)}
+                                  className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 w-full text-left transition-colors duration-200"
+                                >
+                                  <Edit className="h-4 w-4 mr-3" />
+                                  Edit Manager
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination */}
+            <div className="bg-white px-6 py-4 flex items-center justify-between border-t border-gray-200">
+              <div className="flex-1 flex justify-between sm:hidden">
+                <button
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                  disabled={currentPage === totalPages}
+                  className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                >
+                  Next
+                </button>
+              </div>
+              <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">
+                    Showing <span className="font-semibold text-gray-900">{totalUsers > 0 ? ((currentPage - 1) * usersPerPage) + 1 : 0}</span> to{' '}
+                    <span className="font-semibold text-gray-900">{Math.min(currentPage * usersPerPage, totalUsers)}</span> of{' '}
+                    <span className="font-semibold text-gray-900">{totalUsers}</span> results
+                  </p>
+                </div>
+                <div>
+                  <nav className="relative z-0 inline-flex rounded-lg shadow-sm" style={{gap: '2px'}}>
+                    <button
+                      onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                      disabled={currentPage === 1}
+                      className="relative inline-flex items-center px-3 py-2 rounded-l-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
+                    >
+                      Previous
+                    </button>
+                    {(() => {
+                      const pages = [];
+                      const maxVisiblePages = 5;
+                      
+                      if (totalPages <= maxVisiblePages) {
+                        // Show all pages if total pages is less than or equal to max visible
+                        for (let i = 1; i <= totalPages; i++) {
+                          pages.push(
+                            <button
+                              key={i}
+                              onClick={() => setCurrentPage(i)}
+                              className={`relative inline-flex items-center px-4 py-2 border text-sm font-semibold transition-all duration-200 ${
+                                currentPage === i
+                                  ? 'z-10 border-blue-500 text-white shadow-md'
+                                  : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400'
+                              }`}
+                              style={currentPage === i ? {backgroundColor: '#0868a8'} : {}}
+                            >
+                              {i}
+                            </button>
+                          );
+                        }
+                      } else {
+                        // Complex pagination with ellipsis
+                        const startPage = Math.max(1, currentPage - 2);
+                        const endPage = Math.min(totalPages, currentPage + 2);
+                        
+                        // Always show first page
+                        if (startPage > 1) {
+                          pages.push(
+                            <button
+                              key={1}
+                              onClick={() => setCurrentPage(1)}
+                              className="relative inline-flex items-center px-4 py-2 border bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 text-sm font-semibold transition-all duration-200"
+                            >
+                              1
+                            </button>
+                          );
+                          
+                          if (startPage > 2) {
+                            pages.push(
+                              <span key="ellipsis1" className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-gray-50 text-sm font-medium text-gray-500">
+                                •••
+                              </span>
+                            );
+                          }
+                        }
+                        
+                        // Show pages around current page
+                        for (let i = startPage; i <= endPage; i++) {
+                          pages.push(
+                            <button
+                              key={i}
+                              onClick={() => setCurrentPage(i)}
+                              className={`relative inline-flex items-center px-4 py-2 border text-sm font-semibold transition-all duration-200 ${
+                                currentPage === i
+                                  ? 'z-10 border-blue-500 text-white shadow-md'
+                                  : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400'
+                              }`}
+                              style={currentPage === i ? {backgroundColor: '#0868a8'} : {}}
+                            >
+                              {i}
+                            </button>
+                          );
+                        }
+                        
+                        // Always show last page
+                        if (endPage < totalPages) {
+                          if (endPage < totalPages - 1) {
+                            pages.push(
+                              <span key="ellipsis2" className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-gray-50 text-sm font-medium text-gray-500">
+                                •••
+                              </span>
+                            );
+                          }
+                          
+                          pages.push(
+                            <button
+                              key={totalPages}
+                              onClick={() => setCurrentPage(totalPages)}
+                              className="relative inline-flex items-center px-4 py-2 border bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 text-sm font-semibold transition-all duration-200"
+                            >
+                              {totalPages}
+                            </button>
+                          );
+                        }
+                      }
+                      
+                      return pages;
+                    })()}
+                    <button
+                      onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                      disabled={currentPage === totalPages}
+                      className="relative inline-flex items-center px-3 py-2 rounded-r-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
+                    >
+                      Next
+                    </button>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Create Manager Modal */}
+      {showCreateManagerModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{backgroundColor: 'rgba(0, 0, 0, 0.5)'}} onClick={() => setShowCreateManagerModal(false)}>
+          <div className="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-screen overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-white px-6 pt-6 pb-4">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-semibold text-gray-900">Invite New Manager</h3>
+                <button onClick={() => setShowCreateManagerModal(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+              <div className="space-y-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                    <input
+                      type="text"
+                      value={newManager.firstName}
+                      onChange={(e) => setNewManager({...newManager, firstName: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 transition-colors text-sm"
+                      style={{'--tw-ring-color': '#0868a8'}}
+                      onFocus={(e) => e.target.style.borderColor = '#0868a8'}
+                      placeholder="Enter first name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                    <input
+                      type="text"
+                      value={newManager.lastName}
+                      onChange={(e) => setNewManager({...newManager, lastName: e.target.value})}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 transition-colors"
+                      style={{'--tw-ring-color': '#0868a8'}}
+                      onFocus={(e) => e.target.style.borderColor = '#0868a8'}
+                      placeholder="Enter last name"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                  <input
+                    type="email"
+                    value={newManager.email}
+                    onChange={(e) => setNewManager({...newManager, email: e.target.value})}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 transition-colors"
+                    style={{'--tw-ring-color': '#0868a8'}}
+                    onFocus={(e) => e.target.style.borderColor = '#0868a8'}
+                    placeholder="Enter email address"
+                  />
+                </div>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <p className="text-sm text-blue-800">
+                    <strong>Note:</strong> An invitation email will be sent to the manager with login credentials.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-gray-50 px-6 py-4 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-3">
+              <button
+                onClick={() => setShowCreateManagerModal(false)}
+                className="w-full sm:w-auto px-4 py-2 mt-3 sm:mt-0 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors"
+                style={{'--tw-ring-color': '#0868a8'}}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCreateManager}
+                disabled={!newManager.firstName || !newManager.lastName || !newManager.email}
+                className="w-full sm:w-auto px-4 py-2 border border-transparent rounded-lg text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                style={{backgroundColor: '#0868a8', '--tw-ring-color': '#0868a8'}}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#065a8a'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#0868a8'}
+              >
+                Send Invitation
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Create User Modal */}
       {showCreateModal && (
@@ -716,31 +1175,33 @@ const UserManagement = () => {
                   </button>
                 </div>
                 
-                {/* Profile Picture Section */}
-                <div className="flex items-center mb-4">
-                  <div className="w-16 h-16 bg-gray-300 rounded-full mr-4 overflow-hidden flex-shrink-0">
-                    <img 
-                      src={editUser.profileImageUrl || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
-                      alt="Profile" 
-                      className="w-full h-full object-cover"
-                    />
+                {/* Profile Picture Section - Only show for regular users */}
+                {selectedUser?.role !== 'report_manager' && (
+                  <div className="flex items-center mb-4">
+                    <div className="w-16 h-16 bg-gray-300 rounded-full mr-4 overflow-hidden flex-shrink-0">
+                      <img 
+                        src={editUser.profileImageUrl || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
+                        alt="Profile" 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        onChange={handleImageUpload}
+                        className="hidden" 
+                        id="profile-upload"
+                      />
+                      <label 
+                        htmlFor="profile-upload" 
+                        className={`text-blue-600 hover:text-blue-800 text-sm font-medium cursor-pointer ${uploadingImage ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      >
+                        {uploadingImage ? 'Uploading...' : 'Change Picture'}
+                      </label>
+                    </div>
                   </div>
-                  <div>
-                    <input 
-                      type="file" 
-                      accept="image/*" 
-                      onChange={handleImageUpload}
-                      className="hidden" 
-                      id="profile-upload"
-                    />
-                    <label 
-                      htmlFor="profile-upload" 
-                      className={`text-blue-600 hover:text-blue-800 text-sm font-medium cursor-pointer ${uploadingImage ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    >
-                      {uploadingImage ? 'Uploading...' : 'Change Picture'}
-                    </label>
-                  </div>
-                </div>
+                )}
                 
                 <div className="space-y-3">
                   <div className="grid grid-cols-2 gap-3">
@@ -768,27 +1229,43 @@ const UserManagement = () => {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
                     <input
-                      type="text"
-                      value={editUser.phone}
-                      onChange={(e) => setEditUser({...editUser, phone: e.target.value})}
+                      type="email"
+                      value={editUser.email}
+                      onChange={(e) => setEditUser({...editUser, email: e.target.value})}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 transition-colors"
                       style={{'--tw-ring-color': '#0868a8'}}
                       onFocus={(e) => e.target.style.borderColor = '#0868a8'}
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
-                    <input
-                      type="text"
-                      value={editUser.country}
-                      onChange={(e) => setEditUser({...editUser, country: e.target.value})}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 transition-colors"
-                      style={{'--tw-ring-color': '#0868a8'}}
-                      onFocus={(e) => e.target.style.borderColor = '#0868a8'}
-                    />
-                  </div>
+                  {/* Show additional fields only for regular users */}
+                  {selectedUser?.role !== 'report_manager' && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                        <input
+                          type="text"
+                          value={editUser.phone}
+                          onChange={(e) => setEditUser({...editUser, phone: e.target.value})}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 transition-colors"
+                          style={{'--tw-ring-color': '#0868a8'}}
+                          onFocus={(e) => e.target.style.borderColor = '#0868a8'}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
+                        <input
+                          type="text"
+                          value={editUser.country}
+                          onChange={(e) => setEditUser({...editUser, country: e.target.value})}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 transition-colors"
+                          style={{'--tw-ring-color': '#0868a8'}}
+                          onFocus={(e) => e.target.style.borderColor = '#0868a8'}
+                        />
+                      </div>
+                    </>
+                  )}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
                     <div className="relative">
@@ -810,17 +1287,20 @@ const UserManagement = () => {
                       </button>
                     </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
-                    <textarea
-                      value={editUser.address}
-                      onChange={(e) => setEditUser({...editUser, address: e.target.value})}
-                      rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 transition-colors resize-none text-sm"
-                      style={{'--tw-ring-color': '#0868a8'}}
-                      onFocus={(e) => e.target.style.borderColor = '#0868a8'}
-                    />
-                  </div>
+                  {/* Show address field only for regular users */}
+                  {selectedUser?.role !== 'report_manager' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                      <textarea
+                        value={editUser.address}
+                        onChange={(e) => setEditUser({...editUser, address: e.target.value})}
+                        rows={3}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 transition-colors resize-none text-sm"
+                        style={{'--tw-ring-color': '#0868a8'}}
+                        onFocus={(e) => e.target.style.borderColor = '#0868a8'}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="bg-gray-50 px-6 py-3 flex flex-row justify-end space-x-3">

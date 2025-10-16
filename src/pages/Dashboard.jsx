@@ -1,250 +1,522 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart3, Globe, Tag, DollarSign, HardDrive, AlertTriangle, Heart, Search, Shield, Users, Package } from 'lucide-react';
+import { BarChart3, Globe, Tag, DollarSign, HardDrive, AlertTriangle, Heart, Search, Shield, Users, Package, Filter, Calendar, TrendingUp, RefreshCw } from 'lucide-react';
+import Select from 'react-select';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import countries from 'world-countries';
+import toast from 'react-hot-toast';
 
 const Dashboard = () => {
-  const [dashboardStats, setDashboardStats] = useState(null);
-  const [categoryStats, setCategoryStats] = useState([]);
-  const [topCountries, setTopCountries] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  
+  // Filter states
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [fromDate, setFromDate] = useState(null);
+  const [toDate, setToDate] = useState(null);
 
-  const baseUrl = import.meta.env.VITE_API_BASE_URL;
+  // Category mapping with icons and colors
+  const categoryConfig = {
+    'Accident': { icon: AlertTriangle, color: 'bg-red-500', lightColor: 'bg-red-50', textColor: 'text-red-700' },
+    'Crime': { icon: Shield, color: 'bg-red-600', lightColor: 'bg-red-50', textColor: 'text-red-700' },
+    'People': { icon: Users, color: 'bg-blue-500', lightColor: 'bg-blue-50', textColor: 'text-blue-700' },
+    'Pet': { icon: Heart, color: 'bg-pink-500', lightColor: 'bg-pink-50', textColor: 'text-pink-700' },
+    'LostFound': { icon: Search, color: 'bg-yellow-500', lightColor: 'bg-yellow-50', textColor: 'text-yellow-700' },
+    'Other': { icon: Package, color: 'bg-gray-500', lightColor: 'bg-gray-50', textColor: 'text-gray-700' }
+  };
 
-  // All possible categories with their icons and colors
-  const allCategories = [
-    { name: 'Accident', icon: AlertTriangle, color: 'red' },
-    { name: 'Pet', icon: Heart, color: 'pink' },
-    { name: 'LostFound', displayName: 'Lost & Found', icon: Search, color: 'yellow' },
-    { name: 'Crime', icon: Shield, color: 'red' },
-    { name: 'People', icon: Users, color: 'blue' },
-    { name: 'Other', icon: Package, color: 'gray' }
+  // Helper function to get display name for categories
+  const getCategoryDisplayName = (category) => {
+    return category === 'LostFound' ? 'Lost & Found' : category;
+  };
+
+  // Country options for select
+  const countryOptions = countries.map(country => ({
+    value: country.cca2,
+    label: country.name.common,
+    flag: country.flag
+  })).sort((a, b) => a.label.localeCompare(b.label));
+
+  // Category options for select
+  const categoryOptions = [
+    { value: 'Accident', label: 'Accident' },
+    { value: 'Crime', label: 'Crime' },
+    { value: 'People', label: 'People' },
+    { value: 'Pet', label: 'Pet' },
+    { value: 'LostFound', label: 'Lost & Found' },
+    { value: 'Other', label: 'Other' }
   ];
 
   useEffect(() => {
     fetchDashboardData();
-  }, []);
+  }, [selectedCategory, selectedCountry, fromDate, toDate]);
 
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
       
-      // Fetch dashboard stats
-      const statsResponse = await fetch(`${baseUrl}/admin/dashboard`);
-      const statsData = await statsResponse.json();
-      setDashboardStats(statsData);
-
-      // Fetch categories
-      const categoriesResponse = await fetch(`${baseUrl}/admin/categories`);
-      const categoriesData = await categoriesResponse.json();
+      // Demo data for client presentation
+      const demoData = {
+        countries: [
+          {
+            country: "PK",
+            listings: 2,
+            sold: 1,
+            storage: 115846,
+            revenue: 15,
+            storageFormatted: "113.13 KB"
+          },
+          {
+            country: "GB",
+            listings: 1,
+            sold: 1,
+            storage: 2997199,
+            revenue: 25,
+            storageFormatted: "2.86 MB"
+          },
+          {
+            country: "AE",
+            listings: 1,
+            sold: 0,
+            storage: 47705,
+            revenue: 0,
+            storageFormatted: "46.59 KB"
+          },
+          {
+            country: "US",
+            listings: 1,
+            sold: 1,
+            storage: 29845,
+            revenue: 12,
+            storageFormatted: "29.15 KB"
+          },
+          {
+            country: "IN",
+            listings: 1,
+            sold: 1,
+            storage: 39961,
+            revenue: 8,
+            storageFormatted: "39.02 KB"
+          },
+          {
+            country: "JP",
+            listings: 1,
+            sold: 0,
+            storage: 8361,
+            revenue: 0,
+            storageFormatted: "8.17 KB"
+          },
+          {
+            country: "AZ",
+            listings: 1,
+            sold: 0,
+            storage: 39344,
+            revenue: 0,
+            storageFormatted: "38.42 KB"
+          }
+        ],
+        categories: [
+          {
+            category: "Accident",
+            listings: 3,
+            sold: 2,
+            storage: 163551,
+            revenue: 30,
+            storageFormatted: "159.72 KB"
+          },
+          {
+            category: "Pet",
+            listings: 1,
+            sold: 1,
+            storage: 2997199,
+            revenue: 25,
+            storageFormatted: "2.86 MB"
+          },
+          {
+            category: "People",
+            listings: 1,
+            sold: 0,
+            storage: 29845,
+            revenue: 0,
+            storageFormatted: "29.15 KB"
+          },
+          {
+            category: "LostFound",
+            listings: 1,
+            sold: 1,
+            storage: 39961,
+            revenue: 5,
+            storageFormatted: "39.02 KB"
+          },
+          {
+            category: "Other",
+            listings: 1,
+            sold: 0,
+            storage: 8361,
+            revenue: 0,
+            storageFormatted: "8.17 KB"
+          },
+          {
+            category: "Crime",
+            listings: 1,
+            sold: 0,
+            storage: 39344,
+            revenue: 0,
+            storageFormatted: "38.42 KB"
+          }
+        ],
+        totalRevenue: 60,
+        totalStorage: "3.13 MB"
+      };
       
-      // Merge API data with all categories, showing 0 for missing ones
-      const mergedCategories = allCategories.map(category => {
-        const apiCategory = categoriesData.find(cat => cat.category === category.name);
-        return {
-          name: category.displayName || category.name,
-          listings: apiCategory ? apiCategory.listings : 0,
-          sales: apiCategory ? apiCategory.sales : 0,
-          icon: category.icon,
-          color: category.color
-        };
-      });
-      setCategoryStats(mergedCategories);
-
-      // Fetch countries
-      const countriesResponse = await fetch(`${baseUrl}/admin/countries`);
-      const countriesData = await countriesResponse.json();
+      // Apply filters to demo data
+      let filteredData = { ...demoData };
       
-      // Filter out null countries and calculate percentages
-      const validCountries = countriesData.filter(country => country.country !== null);
-      const totalListings = validCountries.reduce((sum, country) => sum + country.listings, 0);
+      if (selectedCategory) {
+        filteredData.categories = demoData.categories.filter(
+          cat => cat.category === selectedCategory.value
+        );
+        // Recalculate totals based on filtered categories
+        const categoryRevenue = filteredData.categories.reduce((sum, cat) => sum + cat.revenue, 0);
+        const categorySold = filteredData.categories.reduce((sum, cat) => sum + cat.sold, 0);
+        filteredData.totalRevenue = categoryRevenue;
+        filteredData.totalSold = categorySold;
+      }
       
-      const countriesWithPercentage = validCountries.map(country => ({
-        name: country.country,
-        listings: country.listings,
-        percentage: totalListings > 0 ? ((country.listings / totalListings) * 100).toFixed(1) : 0
-      }));
+      if (selectedCountry) {
+        filteredData.countries = demoData.countries.filter(
+          country => country.country === selectedCountry.value
+        );
+        // Recalculate totals based on filtered countries
+        const countryRevenue = filteredData.countries.reduce((sum, country) => sum + country.revenue, 0);
+        const countrySold = filteredData.countries.reduce((sum, country) => sum + country.sold, 0);
+        filteredData.totalRevenue = countryRevenue;
+        filteredData.totalSold = countrySold;
+      }
       
-      setTopCountries(countriesWithPercentage);
-      
+      setDashboardData(filteredData);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
+      toast.error('Failed to load dashboard data');
     } finally {
       setLoading(false);
     }
   };
 
-  const getStorageDisplay = (storage) => {
-    if (!storage) return '0 GB';
-    
-    const tbValue = parseFloat(storage.tb);
-    if (tbValue >= 1) {
-      return `${storage.tb} TB`;
-    } else {
-      return `${storage.gb} GB`;
+  const handleRefresh = () => {
+    fetchDashboardData();
+  };
+
+  const clearFilters = () => {
+    setSelectedCategory(null);
+    setSelectedCountry(null);
+    setFromDate(null);
+    setToDate(null);
+  };
+
+  // Calculate totals from API data
+  const getTotals = () => {
+    if (!dashboardData) {
+      return {
+        listings: 0,
+        sold: 0,
+        revenue: 0,
+        storage: '0 B'
+      };
     }
-  };
-
-  const overallStats = dashboardStats ? [
-    { label: 'Total Countries', value: dashboardStats.totalCountries.toLocaleString(), icon: Globe, color: 'blue' },
-    { label: 'Total Categories', value: dashboardStats.totalCategories.toLocaleString(), icon: Tag, color: 'green' },
-    { label: 'Total Listings', value: dashboardStats.totalListings.toLocaleString(), icon: Package, color: 'purple' },
-    { label: 'Storage Used', value: getStorageDisplay(dashboardStats.storage), icon: HardDrive, color: 'orange' }
-  ] : [];
-
-  const getColorClasses = (color) => {
-    const colors = {
-      blue: 'text-white' + ' ' + 'rounded-lg',
-      green: 'bg-green-100 text-green-600',
-      purple: 'bg-purple-100 text-purple-600',
-      orange: 'bg-orange-100 text-orange-600',
-      red: 'bg-red-100 text-red-600',
-      pink: 'bg-pink-100 text-pink-600',
-      yellow: 'bg-yellow-100 text-yellow-600',
-      gray: 'bg-gray-100 text-gray-600'
+    
+    const totalListings = dashboardData.countries?.reduce((sum, country) => sum + country.listings, 0) || 0;
+    const totalSold = dashboardData.totalSold || dashboardData.countries?.reduce((sum, country) => sum + country.sold, 0) || 0;
+    const totalRevenue = dashboardData.totalRevenue || 0;
+    const totalStorage = dashboardData.totalStorage || '0 B';
+    
+    return {
+      listings: totalListings,
+      sold: totalSold,
+      revenue: totalRevenue,
+      storage: totalStorage
     };
-    return colors[color] || colors.gray;
   };
+
+  const formatBytes = (bytes) => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  const totals = getTotals();
+
+
+
+
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">Dashboard</h1>
-          <p className="text-gray-600">Loading dashboard data...</p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-white rounded-lg shadow-sm p-6 animate-pulse">
-              <div className="h-4 bg-gray-200 rounded mb-2"></div>
-              <div className="h-8 bg-gray-200 rounded"></div>
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
+            <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="h-10 bg-gray-200 rounded"></div>
+                <div className="h-10 bg-gray-200 rounded"></div>
+                <div className="h-10 bg-gray-200 rounded"></div>
+                <div className="h-10 bg-gray-200 rounded"></div>
+              </div>
             </div>
-          ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              {[1, 2, 3, 4].map(i => (
+                <div key={i} className="bg-white p-6 rounded-lg shadow-sm">
+                  <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                  <div className="h-8 bg-gray-200 rounded"></div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Page Header */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">Dashboard</h1>
-        <p className="text-gray-600">Overview of listings, countries, categories, and performance metrics.</p>
-      </div>
-
-      {/* Overall Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {overallStats.map((stat, index) => {
-          const IconComponent = stat.icon;
-          return (
-            <div key={index} className="bg-white rounded-lg shadow-sm p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">{stat.label}</p>
-                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                </div>
-                <div className={`p-3 rounded-full ${getColorClasses(stat.color)}`}>
-                  <IconComponent className="h-6 w-6" />
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Category Statistics */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <h2 className="text-lg font-semibold text-gray-800 mb-6">Category Performance</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {categoryStats.map((category, index) => {
-            const IconComponent = category.icon;
-            return (
-              <div key={index} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
-                <div className="flex items-center justify-between mb-3">
-                  <div className={`p-2 rounded-lg ${getColorClasses(category.color)}`}>
-                    <IconComponent className="h-5 w-5" />
-                  </div>
-                  <span className="text-sm font-medium text-gray-800">{category.name}</span>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Listings:</span>
-                    <span className="text-sm font-semibold text-gray-900">{category.listings.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Sales:</span>
-                    <span className="text-sm font-semibold text-green-600">{category.sales.toLocaleString()}</span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Dashboard Analytics</h1>
+          <div className="flex items-center space-x-4">
+          </div>
         </div>
-      </div>
-
-      {/* Country Statistics and Storage */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Top Countries */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-6">Top Countries by Listings</h2>
-          <div className="space-y-4">
-            {topCountries.map((country, index) => (
-              <div key={index} className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{background: '#0868a8'}}>
-                    <span className="text-white text-xs font-bold">{index + 1}</span>
-                  </div>
-                  <span className="font-medium text-gray-800">{country.name}</span>
-                </div>
-                <div className="text-right">
-                  <div className="text-sm font-semibold text-gray-900">{country.listings.toLocaleString()}</div>
-                  <div className="text-xs text-gray-500">{country.percentage}%</div>
-                </div>
-              </div>
-            ))}
+        
+        {/* Filters */}
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-2">
+              <Filter className="h-5 w-5 text-gray-600" />
+              <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
+            </div>
+            <button
+              onClick={clearFilters}
+              className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+            >
+              Clear All
+            </button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+              <Select
+                value={selectedCategory}
+                onChange={setSelectedCategory}
+                options={categoryOptions}
+                placeholder="Select category..."
+                className="text-sm"
+                classNamePrefix="select"
+                isClearable
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
+              <Select
+                value={selectedCountry}
+                onChange={setSelectedCountry}
+                options={countryOptions}
+                placeholder="Select country..."
+                className="text-sm"
+                classNamePrefix="select"
+                isClearable
+              />
+            </div>
+            
+            <div>
+               <label className="block text-sm font-medium text-gray-700 mb-2">From Date</label>
+               <DatePicker
+                 selected={fromDate}
+                 onChange={setFromDate}
+                 placeholderText="Select from date"
+                 className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                 dateFormat="yyyy-MM-dd"
+                 maxDate={new Date()}
+               />
+             </div>
+             
+             <div>
+               <label className="block text-sm font-medium text-gray-700 mb-2">To Date</label>
+               <DatePicker
+                 selected={toDate}
+                 onChange={setToDate}
+                 placeholderText="Select to date"
+                 className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                 dateFormat="yyyy-MM-dd"
+                 minDate={fromDate}
+                 maxDate={new Date()}
+               />
+             </div>
           </div>
         </div>
 
-        {/* Storage & Performance */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-6">Storage & Performance</h2>
-          <div className="space-y-4">
-            <div className="border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-600">Total Storage</span>
-                <span className="text-sm font-bold text-gray-900">{dashboardStats ? getStorageDisplay(dashboardStats.storage) : '0 GB'}</span>
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Listings</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {totals.listings.toLocaleString()}
+                </p>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="h-2 rounded-full" style={{width: '100%', background: '#0868a8'}}></div>
+              <div className="p-3 bg-blue-100 rounded-full">
+                <Package className="h-6 w-6 text-blue-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Events Sold</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {totals.sold.toLocaleString()}
+                </p>
+              </div>
+              <div className="p-3 bg-green-100 rounded-full">
+                <DollarSign className="h-6 w-6 text-green-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Revenue</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  ${totals.revenue.toLocaleString()}
+                </p>
+              </div>
+              <div className="p-3 bg-purple-100 rounded-full">
+                <DollarSign className="h-6 w-6 text-purple-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Storage Used</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {totals.storage}
+                </p>
+              </div>
+              <div className="p-3 bg-orange-100 rounded-full">
+                <HardDrive className="h-6 w-6 text-orange-600" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Analytics Sections */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Categories Analytics */}
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-2">
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <Tag className="h-5 w-5 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900">Categories</h3>
+                  <p className="text-sm text-gray-500">Performance by category</p>
+                </div>
               </div>
             </div>
             
-            <div className="border border-gray-200 rounded-lg p-4">
-              <div className="text-sm font-medium text-gray-600 mb-3">Category Distribution</div>
-              <div className="text-xs text-gray-500 mb-2">
-                Storage per category: {dashboardStats ? (dashboardStats.storage.bytes / dashboardStats.totalCategories / (1024 * 1024 * 1024)).toFixed(2) : '0'} GB
+            <div className="space-y-4">
+              {dashboardData?.categories?.map((category, index) => {
+                const config = categoryConfig[category.category] || categoryConfig['Other'];
+                const IconComponent = config.icon;
+                
+                return (
+                  <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <div className={`p-2 ${config.color} rounded-lg`}>
+                        <IconComponent className="h-4 w-4 text-white" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900">{getCategoryDisplayName(category.category)}</p>
+                        <p className="text-sm text-gray-500">{category.storageFormatted}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-semibold text-gray-900">{category.listings} listings</p>
+                      <p className="text-sm text-gray-500">{category.sold} sold</p>
+                    </div>
+                  </div>
+                );
+              }) || (
+                <div className="flex items-center justify-center h-32 text-gray-400">
+                  <div className="text-center">
+                    <Tag className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                    <p className="text-sm">No category data available</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          {/* Countries Analytics */}
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-2">
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <Globe className="h-5 w-5 text-green-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900">Countries</h3>
+                  <p className="text-sm text-gray-500">Geographic distribution</p>
+                </div>
               </div>
-              <div className="flex space-x-1">
-                {allCategories.map((category, index) => {
-                  const colors = {
-                    red: '#ef4444',
-                    pink: '#ec4899', 
-                    yellow: '#eab308',
-                    blue: '#0868a8',
-                    gray: '#6b7280'
-                  };
-                  return (
-                    <div 
-                      key={index}
-                      className={`flex-1 h-2 ${index === 0 ? 'rounded-l' : ''} ${index === allCategories.length - 1 ? 'rounded-r' : ''}`}
-                      style={{background: colors[category.color] || colors.gray}}
-                      title={category.displayName || category.name}
-                    ></div>
-                  );
-                })}
-              </div>
+            </div>
+            
+            <div className="space-y-4">
+              {dashboardData?.countries?.map((country, index) => {
+                const countryInfo = countries.find(c => c.cca2 === country.country);
+                
+                return (
+                  <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <div className="text-2xl">
+                        {countryInfo?.flag || '🌍'}
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900">
+                          {countryInfo?.name?.common || country.country}
+                        </p>
+                        <p className="text-sm text-gray-500">{country.storageFormatted}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-semibold text-gray-900">{country.listings} listings</p>
+                      <p className="text-sm text-gray-500">{country.sold} sold</p>
+                    </div>
+                  </div>
+                );
+              }) || (
+                <div className="flex items-center justify-center h-32 text-gray-400">
+                  <div className="text-center">
+                    <Globe className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                    <p className="text-sm">No country data available</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
+
       </div>
     </div>
   );
