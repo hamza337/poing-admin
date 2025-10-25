@@ -51,18 +51,18 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
-button:hover {
+/* button:hover {
   border-color: #646cff;
-}
+} */
 
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
     background-color: #ffffff;
   }
-  button {
-    background-color: #f9f9f9;
-  }
+  /* button { */
+    /* background-color: #f9f9f9; */
+  /* } */
 }
 
 .wmde-markdown ul{
