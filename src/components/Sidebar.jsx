@@ -112,12 +112,12 @@ const Sidebar = () => {
               <div className="flex items-center space-x-2">
                 {/* Desktop: Show full logo */}
                 <img 
-                  src="/brandLogo.png" 
+                  src="/brandLogoAdmin.png" 
                   alt="Poing Admin" 
-                  className="h-12 w-auto hidden sm:block"
+                  className="h-16 w-auto hidden sm:block"
                 />
                 {/* Mobile: Show PA text */}
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center sm:hidden" style={{background: '#0868a8'}}>
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center sm:hidden" style={{background: '#0a9bf7'}}>
                   <span className="text-white font-bold text-xs">PA</span>
                 </div>
               </div>
@@ -151,7 +151,7 @@ const Sidebar = () => {
                         }
                         ${isCollapsed ? 'justify-center' : 'space-x-3'}
                       `}
-                      style={({ isActive }) => isActive ? { background: '#0868a8' } : {}}
+                      style={({ isActive }) => isActive ? { background: '#0a9bf7' } : {}}
                     onClick={() => setIsMobileOpen(false)}
                   >
                     <IconComponent size={20} className="flex-shrink-0" />

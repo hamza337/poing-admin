@@ -304,7 +304,7 @@ const ReportsComplaints = () => {
       case 'Hate Speech':
         return <AlertTriangle className="h-4 w-4 text-red-500" />;
       case 'Intellectual Property':
-        return <FileText className="h-4 w-4" style={{color: '#0868a8'}} />;
+        return <FileText className="h-4 w-4" style={{color: '#0a9bf7'}} />;
       case 'Inappropriate Content':
         return <AlertTriangle className="h-4 w-4 text-orange-500" />;
       default:
@@ -404,7 +404,7 @@ const ReportsComplaints = () => {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-                  style={{'--tw-ring-color': '#0868a8'}}
+                  style={{'--tw-ring-color': '#0a9bf7'}}
                 />
               </div>
             </div>
@@ -493,9 +493,9 @@ const ReportsComplaints = () => {
                       <div className="flex space-x-2">
                         <button 
                           className="text-sm font-medium" 
-                          style={{color: '#0868a8'}} 
+                          style={{color: '#0a9bf7'}} 
                           onMouseEnter={(e) => e.target.style.color = '#065a8a'} 
-                          onMouseLeave={(e) => e.target.style.color = '#0868a8'}
+                          onMouseLeave={(e) => e.target.style.color = '#0a9bf7'}
                           onClick={() => {
                             setSelectedReport(report);
                             setCurrentMediaIndex(0);
@@ -602,7 +602,7 @@ const ReportsComplaints = () => {
                         ? 'z-10 text-white'
                         : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
                     }`}
-                    style={currentPage === index + 1 ? {backgroundColor: '#0868a8', borderColor: '#0868a8'} : {}}
+                    style={currentPage === index + 1 ? {backgroundColor: '#0a9bf7', borderColor: '#0a9bf7'} : {}}
                   >
                     {index + 1}
                   </button>
@@ -728,7 +728,7 @@ const ReportsComplaints = () => {
                           ? 'z-10 text-white'
                           : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
                       }`}
-                      style={emailLogsPagination.page === index + 1 ? {backgroundColor: '#0868a8', borderColor: '#0868a8'} : {}}
+                      style={emailLogsPagination.page === index + 1 ? {backgroundColor: '#0a9bf7', borderColor: '#0a9bf7'} : {}}
                     >
                       {index + 1}
                     </button>

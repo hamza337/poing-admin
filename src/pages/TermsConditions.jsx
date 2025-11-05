@@ -91,7 +91,7 @@ const TermsConditions = () => {
             {!isEditing ? (
               <button 
                 onClick={() => setIsEditing(true)}
-                className="inline-flex items-center px-4 py-2 bg-[#0868A8] text-white rounded-lg transition-colors"
+                className="inline-flex items-center px-4 py-2 bg-[#0a9bf7] text-white rounded-lg transition-colors"
               >
                 <Edit className="h-4 w-4 mr-2" />
                 Edit

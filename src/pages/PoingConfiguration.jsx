@@ -250,7 +250,7 @@ const PoingConfiguration = () => {
         <div className="mb-8">
           <div className="flex items-center space-x-4">
             <div className="p-3 bg-blue-50 rounded-xl">
-               <Settings className="h-8 w-8 text-[#0868A8]" />
+               <Settings className="h-8 w-8 text-[#0a9bf7]" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Poing Configuration</h1>
@@ -267,7 +267,7 @@ const PoingConfiguration = () => {
                  onClick={() => setActiveTab('platform')}
                  className={`flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
                    activeTab === 'platform'
-                     ? 'bg-[#0868A8] text-white shadow-md'
+                     ? 'bg-[#0a9bf7] text-white shadow-md'
                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
                  }`}
                >
@@ -280,7 +280,7 @@ const PoingConfiguration = () => {
                  onClick={() => setActiveTab('flat')}
                  className={`flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
                    activeTab === 'flat'
-                     ? 'bg-[#0868A8] text-white shadow-md'
+                     ? 'bg-[#0a9bf7] text-white shadow-md'
                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
                  }`}
                >
@@ -293,7 +293,7 @@ const PoingConfiguration = () => {
                  onClick={() => setActiveTab('recommended')}
                  className={`flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
                    activeTab === 'recommended'
-                     ? 'bg-[#0868A8] text-white shadow-md'
+                     ? 'bg-[#0a9bf7] text-white shadow-md'
                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
                  }`}
                >
@@ -306,7 +306,7 @@ const PoingConfiguration = () => {
                  onClick={() => setActiveTab('expiry')}
                  className={`flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
                    activeTab === 'expiry'
-                     ? 'bg-[#0868A8] text-white shadow-md'
+                     ? 'bg-[#0a9bf7] text-white shadow-md'
                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
                  }`}
                >
@@ -322,7 +322,7 @@ const PoingConfiguration = () => {
         {/* Loading State */}
         {loading ? (
           <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0868A8]"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0a9bf7]"></div>
             <span className="ml-3 text-gray-600">Loading configurations...</span>
           </div>
         ) : (
@@ -353,7 +353,7 @@ const PoingConfiguration = () => {
                     {!isEditing ? (
                       <button
                         onClick={() => handleEdit(category.id)}
-                        className="p-2 text-[#0868A8] hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
+                        className="p-2 text-[#0a9bf7] hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
                       >
                         <Edit3 className="h-5 w-5" />
                       </button>
@@ -390,7 +390,7 @@ const PoingConfiguration = () => {
                           step="0.1"
                           value={tempValues.platformFee || ''}
                           onChange={(e) => handleInputChange('platformFee', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0868A8] focus:border-[#0868A8] transition-colors"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0a9bf7] focus:border-[#0a9bf7] transition-colors"
                           placeholder="Enter platform fee %"
                         />
                       ) : (
@@ -414,7 +414,7 @@ const PoingConfiguration = () => {
                           step="0.01"
                           value={tempValues.flatFee || ''}
                           onChange={(e) => handleInputChange('flatFee', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0868A8] focus:border-[#0868A8] transition-colors"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0a9bf7] focus:border-[#0a9bf7] transition-colors"
                           placeholder="Enter flat fee"
                         />
                       ) : (
@@ -438,7 +438,7 @@ const PoingConfiguration = () => {
                           step="0.01"
                           value={tempValues.recommendedFee || ''}
                           onChange={(e) => handleInputChange('recommendedFee', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0868A8] focus:border-[#0868A8] transition-colors"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0a9bf7] focus:border-[#0a9bf7] transition-colors"
                           placeholder="Enter recommended price"
                         />
                       ) : (
@@ -461,7 +461,7 @@ const PoingConfiguration = () => {
                           type="number"
                           value={tempValues.eventExpiry || ''}
                           onChange={(e) => handleInputChange('eventExpiry', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0868A8] focus:border-[#0868A8] transition-colors"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0a9bf7] focus:border-[#0a9bf7] transition-colors"
                           placeholder="Enter expiry days"
                         />
                       ) : (

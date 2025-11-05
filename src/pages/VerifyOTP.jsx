@@ -171,9 +171,9 @@ const VerifyOTP = () => {
         <div className="text-center mb-8">
           <div className="mb-4 mx-auto">
             <img 
-              src="/brandLogo.png" 
+              src="/brandLogoAdmin.png" 
               alt="Poing Admin" 
-              className="w-16 h-16 mx-auto object-contain"
+              className="w-40 mx-auto object-contain"
             />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Verify Your Email</h1>
@@ -202,7 +202,7 @@ const VerifyOTP = () => {
                     className={`w-12 h-12 text-center text-xl font-bold border-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
                       error 
                         ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
-                        : 'border-gray-300 focus:ring-[#0868A8] focus:border-[#0868A8]'
+                        : 'border-gray-300 focus:ring-[#0a9bf7] focus:border-[#0a9bf7]'
                     }`}
                     placeholder="0"
                   />
@@ -224,7 +224,7 @@ const VerifyOTP = () => {
                   type="button"
                   onClick={handleResendOTP}
                   disabled={resendLoading}
-                  className="inline-flex items-center gap-2 text-sm text-[#0868A8] hover:text-[#065a8a] font-medium transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-2 text-sm text-[#0a9bf7] hover:text-[#065a8a] font-medium transition-colors disabled:opacity-50"
                 >
                   {resendLoading ? (
                     <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
@@ -240,7 +240,7 @@ const VerifyOTP = () => {
             <button
               type="submit"
               disabled={loading || otp.join('').length !== 6}
-              className="w-full bg-gradient-to-r from-[#0868A8] to-[#065a8a] hover:from-[#065a8a] hover:to-[#054c75] text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-gradient-to-r from-[#0a9bf7] to-[#065a8a] hover:from-[#065a8a] hover:to-[#054c75] text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -257,7 +257,7 @@ const VerifyOTP = () => {
           <div className="mt-6 text-center">
             <Link 
               to="/forgot-password" 
-              className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-[#0868A8] font-medium transition-colors"
+              className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-[#0a9bf7] font-medium transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
               Back to Email Entry

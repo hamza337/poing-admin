@@ -30,9 +30,9 @@ const PasswordResetSuccess = () => {
         {/* Logo and Header */}
         <div className="text-center mb-8">
           <img 
-            src="/brandLogo.png" 
+            src="/brandLogoAdmin.png" 
             alt="Poing Admin" 
-            className="w-16 h-16 mx-auto object-contain mb-4"
+            className="w-40 mx-auto object-contain mb-4"
           />
           <div className="mx-auto w-16 h-16 bg-gradient-to-r from-green-600 to-green-700 rounded-xl flex items-center justify-center mb-4 shadow-lg">
             <CheckCircle className="h-10 w-10 text-white" />
@@ -61,7 +61,7 @@ const PasswordResetSuccess = () => {
 
             {/* Action Button */}
             {isRedirecting ? (
-              <div className="inline-flex items-center justify-center gap-2 w-full bg-gradient-to-r from-[#0868A8] to-[#065a8a] text-white font-semibold py-3 px-4 rounded-lg">
+              <div className="inline-flex items-center justify-center gap-2 w-full bg-gradient-to-r from-[#0a9bf7] to-[#065a8a] text-white font-semibold py-3 px-4 rounded-lg">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 Redirecting...
               </div>
@@ -72,7 +72,7 @@ const PasswordResetSuccess = () => {
                 </div>
                 <Link
                   to="/login"
-                  className="inline-flex items-center justify-center gap-2 w-full bg-gradient-to-r from-[#0868A8] to-[#065a8a] hover:from-[#065a8a] hover:to-[#054c75] text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+                  className="inline-flex items-center justify-center gap-2 w-full bg-gradient-to-r from-[#0a9bf7] to-[#065a8a] hover:from-[#065a8a] hover:to-[#054c75] text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
                 >
                   Continue to Login Now
                   <ArrowRight className="h-4 w-4" />

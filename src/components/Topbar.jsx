@@ -32,7 +32,7 @@ const Topbar = () => {
             onClick={() => setIsProfileOpen(!isProfileOpen)}
             className="flex items-center space-x-3 p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors duration-200"
           >
-            <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{background: '#0868a8'}}>
+            <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{background: '#0a9bf7'}}>
               <User size={16} className="text-white" />
             </div>
             <div className="hidden md:block text-left">

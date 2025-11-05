@@ -428,7 +428,7 @@ const UserManagement = () => {
           <button 
             onClick={() => activeTab === 'users' ? setShowCreateModal(true) : setShowCreateManagerModal(true)}
             className="text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-md transition-all duration-200 flex items-center gap-2"
-            style={{backgroundColor: '#0868a8', '--tw-ring-color': '#0868a8'}}
+            style={{backgroundColor: '#0a9bf7', '--tw-ring-color': '#0a9bf7'}}
           >
             <Plus className="h-4 w-4" />
             {activeTab === 'users' ? 'Create User' : 'Invite Manager'}
@@ -653,7 +653,7 @@ const UserManagement = () => {
                               ? 'z-10 border-blue-500 text-white shadow-md'
                               : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400'
                           }`}
-                          style={currentPage === i ? {backgroundColor: '#0868a8'} : {}}
+                          style={currentPage === i ? {backgroundColor: '#0a9bf7'} : {}}
                         >
                           {i}
                         </button>
@@ -696,7 +696,7 @@ const UserManagement = () => {
                               ? 'z-10 border-blue-500 text-white shadow-md'
                               : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400'
                           }`}
-                          style={currentPage === i ? {backgroundColor: '#0868a8'} : {}}
+                          style={currentPage === i ? {backgroundColor: '#0a9bf7'} : {}}
                         >
                           {i}
                         </button>
@@ -898,7 +898,7 @@ const UserManagement = () => {
                                   ? 'z-10 border-blue-500 text-white shadow-md'
                                   : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400'
                               }`}
-                              style={currentPage === i ? {backgroundColor: '#0868a8'} : {}}
+                              style={currentPage === i ? {backgroundColor: '#0a9bf7'} : {}}
                             >
                               {i}
                             </button>
@@ -941,7 +941,7 @@ const UserManagement = () => {
                                   ? 'z-10 border-blue-500 text-white shadow-md'
                                   : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400'
                               }`}
-                              style={currentPage === i ? {backgroundColor: '#0868a8'} : {}}
+                              style={currentPage === i ? {backgroundColor: '#0a9bf7'} : {}}
                             >
                               {i}
                             </button>
@@ -1007,8 +1007,8 @@ const UserManagement = () => {
                       value={newManager.firstName}
                       onChange={(e) => setNewManager({...newManager, firstName: e.target.value})}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 transition-colors text-sm"
-                      style={{'--tw-ring-color': '#0868a8'}}
-                      onFocus={(e) => e.target.style.borderColor = '#0868a8'}
+                      style={{'--tw-ring-color': '#0a9bf7'}}
+                      onFocus={(e) => e.target.style.borderColor = '#0a9bf7'}
                       placeholder="Enter first name"
                     />
                   </div>
@@ -1019,8 +1019,8 @@ const UserManagement = () => {
                       value={newManager.lastName}
                       onChange={(e) => setNewManager({...newManager, lastName: e.target.value})}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 transition-colors"
-                      style={{'--tw-ring-color': '#0868a8'}}
-                      onFocus={(e) => e.target.style.borderColor = '#0868a8'}
+                      style={{'--tw-ring-color': '#0a9bf7'}}
+                      onFocus={(e) => e.target.style.borderColor = '#0a9bf7'}
                       placeholder="Enter last name"
                     />
                   </div>
@@ -1032,8 +1032,8 @@ const UserManagement = () => {
                     value={newManager.email}
                     onChange={(e) => setNewManager({...newManager, email: e.target.value})}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 transition-colors"
-                    style={{'--tw-ring-color': '#0868a8'}}
-                    onFocus={(e) => e.target.style.borderColor = '#0868a8'}
+                    style={{'--tw-ring-color': '#0a9bf7'}}
+                    onFocus={(e) => e.target.style.borderColor = '#0a9bf7'}
                     placeholder="Enter email address"
                   />
                 </div>
@@ -1048,7 +1048,7 @@ const UserManagement = () => {
               <button
                 onClick={() => setShowCreateManagerModal(false)}
                 className="w-full sm:w-auto px-4 py-2 mt-3 sm:mt-0 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors"
-                style={{'--tw-ring-color': '#0868a8'}}
+                style={{'--tw-ring-color': '#0a9bf7'}}
               >
                 Cancel
               </button>
@@ -1056,9 +1056,9 @@ const UserManagement = () => {
                 onClick={handleCreateManager}
                 disabled={!newManager.firstName || !newManager.lastName || !newManager.email}
                 className="w-full sm:w-auto px-4 py-2 border border-transparent rounded-lg text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                style={{backgroundColor: '#0868a8', '--tw-ring-color': '#0868a8'}}
+                style={{backgroundColor: '#0a9bf7', '--tw-ring-color': '#0a9bf7'}}
                 onMouseEnter={(e) => e.target.style.backgroundColor = '#065a8a'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = '#0868a8'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#0a9bf7'}
               >
                 Send Invitation
               </button>
@@ -1087,8 +1087,8 @@ const UserManagement = () => {
                       value={newUser.firstName}
                       onChange={(e) => setNewUser({...newUser, firstName: e.target.value})}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 transition-colors text-sm"
-                      style={{'--tw-ring-color': '#0868a8'}}
-                      onFocus={(e) => e.target.style.borderColor = '#0868a8'}
+                      style={{'--tw-ring-color': '#0a9bf7'}}
+                      onFocus={(e) => e.target.style.borderColor = '#0a9bf7'}
                       placeholder="Enter first name"
                     />
                   </div>
@@ -1099,8 +1099,8 @@ const UserManagement = () => {
                       value={newUser.lastName}
                       onChange={(e) => setNewUser({...newUser, lastName: e.target.value})}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 transition-colors"
-                      style={{'--tw-ring-color': '#0868a8'}}
-                      onFocus={(e) => e.target.style.borderColor = '#0868a8'}
+                      style={{'--tw-ring-color': '#0a9bf7'}}
+                      onFocus={(e) => e.target.style.borderColor = '#0a9bf7'}
                       placeholder="Enter last name"
                     />
                   </div>
@@ -1112,8 +1112,8 @@ const UserManagement = () => {
                     value={newUser.email}
                     onChange={(e) => setNewUser({...newUser, email: e.target.value})}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 transition-colors"
-                    style={{'--tw-ring-color': '#0868a8'}}
-                    onFocus={(e) => e.target.style.borderColor = '#0868a8'}
+                    style={{'--tw-ring-color': '#0a9bf7'}}
+                    onFocus={(e) => e.target.style.borderColor = '#0a9bf7'}
                     placeholder="Enter email address"
                   />
                 </div>
@@ -1125,8 +1125,8 @@ const UserManagement = () => {
                       value={newUser.password}
                       onChange={(e) => setNewUser({...newUser, password: e.target.value})}
                       className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 transition-colors"
-                      style={{'--tw-ring-color': '#0868a8'}}
-                      onFocus={(e) => e.target.style.borderColor = '#0868a8'}
+                      style={{'--tw-ring-color': '#0a9bf7'}}
+                      onFocus={(e) => e.target.style.borderColor = '#0a9bf7'}
                       placeholder="Enter password"
                     />
                     <button
@@ -1144,7 +1144,7 @@ const UserManagement = () => {
               <button
                 onClick={() => setShowCreateModal(false)}
                 className="w-full sm:w-auto px-4 py-2 mt-3 sm:mt-0 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors"
-                style={{'--tw-ring-color': '#0868a8'}}
+                style={{'--tw-ring-color': '#0a9bf7'}}
               >
                 Cancel
               </button>
@@ -1152,9 +1152,9 @@ const UserManagement = () => {
                 onClick={handleCreateUser}
                 disabled={!newUser.firstName || !newUser.lastName || !newUser.email || !newUser.password}
                 className="w-full sm:w-auto px-4 py-2 border border-transparent rounded-lg text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                style={{backgroundColor: '#0868a8', '--tw-ring-color': '#0868a8'}}
+                style={{backgroundColor: '#0a9bf7', '--tw-ring-color': '#0a9bf7'}}
                 onMouseEnter={(e) => e.target.style.backgroundColor = '#065a8a'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = '#0868a8'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#0a9bf7'}
               >
                 Create User
               </button>
@@ -1212,8 +1212,8 @@ const UserManagement = () => {
                         value={editUser.firstName}
                         onChange={(e) => setEditUser({...editUser, firstName: e.target.value})}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 transition-colors text-sm"
-                        style={{'--tw-ring-color': '#0868a8'}}
-                        onFocus={(e) => e.target.style.borderColor = '#0868a8'}
+                        style={{'--tw-ring-color': '#0a9bf7'}}
+                        onFocus={(e) => e.target.style.borderColor = '#0a9bf7'}
                       />
                     </div>
                     <div>
@@ -1223,8 +1223,8 @@ const UserManagement = () => {
                         value={editUser.lastName}
                         onChange={(e) => setEditUser({...editUser, lastName: e.target.value})}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 transition-colors"
-                        style={{'--tw-ring-color': '#0868a8'}}
-                        onFocus={(e) => e.target.style.borderColor = '#0868a8'}
+                        style={{'--tw-ring-color': '#0a9bf7'}}
+                        onFocus={(e) => e.target.style.borderColor = '#0a9bf7'}
                       />
                     </div>
                   </div>
@@ -1235,8 +1235,8 @@ const UserManagement = () => {
                       value={editUser.email}
                       onChange={(e) => setEditUser({...editUser, email: e.target.value})}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 transition-colors"
-                      style={{'--tw-ring-color': '#0868a8'}}
-                      onFocus={(e) => e.target.style.borderColor = '#0868a8'}
+                      style={{'--tw-ring-color': '#0a9bf7'}}
+                      onFocus={(e) => e.target.style.borderColor = '#0a9bf7'}
                     />
                   </div>
                   {/* Show additional fields only for regular users */}
@@ -1249,8 +1249,8 @@ const UserManagement = () => {
                           value={editUser.phone}
                           onChange={(e) => setEditUser({...editUser, phone: e.target.value})}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 transition-colors"
-                          style={{'--tw-ring-color': '#0868a8'}}
-                          onFocus={(e) => e.target.style.borderColor = '#0868a8'}
+                          style={{'--tw-ring-color': '#0a9bf7'}}
+                          onFocus={(e) => e.target.style.borderColor = '#0a9bf7'}
                         />
                       </div>
                       <div>
@@ -1260,8 +1260,8 @@ const UserManagement = () => {
                           value={editUser.country}
                           onChange={(e) => setEditUser({...editUser, country: e.target.value})}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 transition-colors"
-                          style={{'--tw-ring-color': '#0868a8'}}
-                          onFocus={(e) => e.target.style.borderColor = '#0868a8'}
+                          style={{'--tw-ring-color': '#0a9bf7'}}
+                          onFocus={(e) => e.target.style.borderColor = '#0a9bf7'}
                         />
                       </div>
                     </>
@@ -1274,8 +1274,8 @@ const UserManagement = () => {
                         value={editUser.password}
                         onChange={(e) => setEditUser({...editUser, password: e.target.value})}
                         className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 transition-colors"
-                        style={{'--tw-ring-color': '#0868a8'}}
-                        onFocus={(e) => e.target.style.borderColor = '#0868a8'}
+                        style={{'--tw-ring-color': '#0a9bf7'}}
+                        onFocus={(e) => e.target.style.borderColor = '#0a9bf7'}
                         placeholder="Enter new password (leave blank to keep current)"
                       />
                       <button
@@ -1296,8 +1296,8 @@ const UserManagement = () => {
                         onChange={(e) => setEditUser({...editUser, address: e.target.value})}
                         rows={3}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 transition-colors resize-none text-sm"
-                        style={{'--tw-ring-color': '#0868a8'}}
-                        onFocus={(e) => e.target.style.borderColor = '#0868a8'}
+                        style={{'--tw-ring-color': '#0a9bf7'}}
+                        onFocus={(e) => e.target.style.borderColor = '#0a9bf7'}
                       />
                     </div>
                   )}
@@ -1307,16 +1307,16 @@ const UserManagement = () => {
                 <button
                   onClick={() => setShowEditModal(false)}
                   className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors"
-                  style={{'--tw-ring-color': '#0868a8'}}
+                  style={{'--tw-ring-color': '#0a9bf7'}}
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleUpdateUser}
                   className="px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors"
-                  style={{backgroundColor: '#0868a8', '--tw-ring-color': '#0868a8'}}
+                  style={{backgroundColor: '#0a9bf7', '--tw-ring-color': '#0a9bf7'}}
                   onMouseEnter={(e) => e.target.style.backgroundColor = '#065a8a'}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = '#0868a8'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = '#0a9bf7'}
                 >
                   Update User
                 </button>

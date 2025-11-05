@@ -130,9 +130,9 @@ const ResetPassword = () => {
         <div className="text-center mb-8">
           <div className="mb-4 mx-auto">
             <img 
-              src="/brandLogo.png" 
+              src="/brandLogoAdmin.png" 
               alt="Poing Admin" 
-              className="w-16 h-16 mx-auto object-contain"
+              className="w-40 mx-auto object-contain"
             />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Set New Password</h1>
@@ -164,7 +164,7 @@ const ResetPassword = () => {
                   className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
                     errors.password 
                       ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
-                      : 'border-gray-300 focus:ring-[#0868A8] focus:border-[#0868A8]'
+                      : 'border-gray-300 focus:ring-[#0a9bf7] focus:border-[#0a9bf7]'
                   }`}
                   placeholder="Enter your new password"
                 />
@@ -238,7 +238,7 @@ const ResetPassword = () => {
                   className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
                     errors.confirmPassword 
                       ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
-                      : 'border-gray-300 focus:ring-[#0868A8] focus:border-[#0868A8]'
+                      : 'border-gray-300 focus:ring-[#0a9bf7] focus:border-[#0a9bf7]'
                   }`}
                   placeholder="Confirm your new password"
                 />
@@ -259,7 +259,7 @@ const ResetPassword = () => {
             <button
               type="submit"
               disabled={loading || score < 3}
-              className="w-full bg-gradient-to-r from-[#0868A8] to-[#065a8a] hover:from-[#065a8a] hover:to-[#054c75] text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-gradient-to-r from-[#0a9bf7] to-[#065a8a] hover:from-[#065a8a] hover:to-[#054c75] text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
