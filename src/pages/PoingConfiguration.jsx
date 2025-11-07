@@ -11,6 +11,7 @@ const PoingConfiguration = () => {
   const [categoryConfigs, setCategoryConfigs] = useState([]);
   const [recommendedPrices, setRecommendedPrices] = useState({});
   const [categoryFeesData, setCategoryFeesData] = useState({});
+  const [categoryExpiryData, setCategoryExpiryData] = useState({});
 
   // Helper function to map category names for API calls
   const getCategoryApiName = (categoryName) => {
@@ -64,6 +65,16 @@ const PoingConfiguration = () => {
           };
         });
         setRecommendedPrices(prices);
+
+        // Fetch event expiry per category
+        const expiryResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/admin/category-expiry`);
+        const expiryData = await expiryResponse.json();
+        const expiryByCategory = {};
+        expiryData.forEach(item => {
+          const displayName = getCategoryDisplayName(item.category);
+          expiryByCategory[displayName] = { id: item.id, expiryDays: item.expiryDays };
+        });
+        setCategoryExpiryData(expiryByCategory);
         
         // Map API data to our component structure
         const mappedData = feesData.map(item => {
@@ -119,7 +130,7 @@ const PoingConfiguration = () => {
             platformFee: item.platformFee || 0,
             flatFee: item.flatFee || 0,
             recommendedFee: prices[categoryName]?.price || 5.00,
-            eventExpiry: 30 // Default value
+            eventExpiry: expiryByCategory[categoryName]?.expiryDays ?? null
           };
         });
         
@@ -209,6 +220,30 @@ const PoingConfiguration = () => {
             ...requestBody
           }
         }));
+      } else if (activeTab === 'expiry') {
+        const expiryMeta = categoryExpiryData[category.name];
+        if (!expiryMeta || !expiryMeta.id) {
+          throw new Error('Expiry record not found for selected category');
+        }
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/admin/category-expiry/${expiryMeta.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            expiryDays: tempValues.eventExpiry
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to save event expiry days');
+        }
+        
+        // Update local expiry data (keep ID, update days)
+        setCategoryExpiryData(prev => ({
+          ...prev,
+          [category.name]: { ...(prev[category.name] || {}), expiryDays: tempValues.eventExpiry }
+        }));
       }
       
       // Update local category configs
@@ -235,7 +270,9 @@ const PoingConfiguration = () => {
   const handleInputChange = (field, value) => {
     setTempValues(prev => ({
       ...prev,
-      [field]: parseFloat(value) || 0
+      [field]: field === 'eventExpiry'
+        ? (value === '' ? null : (Number.isFinite(parseInt(value, 10)) ? parseInt(value, 10) : null))
+        : (parseFloat(value) || 0)
     }));
   };
 
@@ -459,14 +496,14 @@ const PoingConfiguration = () => {
                       {isEditing ? (
                         <input
                           type="number"
-                          value={tempValues.eventExpiry || ''}
+                          value={tempValues.eventExpiry ?? ''}
                           onChange={(e) => handleInputChange('eventExpiry', e.target.value)}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0a9bf7] focus:border-[#0a9bf7] transition-colors"
-                          placeholder="Enter expiry days"
+                          placeholder="Enter expiry days (blank = no expiry)"
                         />
                       ) : (
                         <div className="bg-gray-50 px-3 py-2 rounded-lg border border-gray-200">
-                           <span className="text-2xl font-bold text-gray-700">{category.eventExpiry} days</span>
+                           <span className="text-2xl font-bold text-gray-700">{category.eventExpiry == null ? 'No expiry' : `${category.eventExpiry} days`}</span>
                         </div>
                       )}
                       <p className="text-sm text-gray-500 mt-2">Number of days before events expire</p>

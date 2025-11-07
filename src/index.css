@@ -68,3 +68,18 @@ button {
 .wmde-markdown ul{
   list-style: inherit;
 }
+
+/* Make native date picker icon clearly visible */
+.date-input {
+  padding-right: 2.5rem; /* space for indicator */
+}
+
+.date-input::-webkit-calendar-picker-indicator {
+  opacity: 1;
+  filter: brightness(0); /* render as black */
+  cursor: pointer;
+}
+
+.date-input::-webkit-calendar-picker-indicator:hover {
+  filter: brightness(0) contrast(1.2);
+}
